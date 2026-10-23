@@ -1,6 +1,17 @@
+import { loadConfig } from "../vite/config.ts";
 import { expect, test } from "./csp.ts";
 
-// Tests the starter <section>; delete this file when you replace it.
+const { title } = loadConfig();
+
+// Tests the starter shell and <section>; delete this file when you replace it.
+test("renders the kit shell", async ({ page }) => {
+	await page.goto("/");
+	await expect(page.locator("tk-shell")).toBeVisible();
+	await expect(page.locator("tk-header")).toContainText(title);
+	await expect(page.locator("tk-sheet")).toBeAttached();
+	await expect(page.locator("tk-toasts")).toBeAttached();
+});
+
 test("starter sheet and toast work", async ({ page }) => {
 	await page.goto("/");
 	const sheet = page.locator("tk-sheet");

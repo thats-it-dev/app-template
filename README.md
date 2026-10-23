@@ -8,6 +8,15 @@ GitHub template for small static PWAs on [thatsit.app](https://thatsit.app), bui
 2. Run `npm run icons` to regenerate the icons from that color.
 3. Replace the `<section>` in `src/app-main.ts` with your app, and delete `e2e/starter.spec.ts` (it tests the starter buttons).
 
+## Layouts
+
+`<html data-shell>` in `index.html` is the switch. The kit's `kit.css` uses it to pin `html` and `body` to `height: 100%` with `overflow: hidden` and no overscroll, so the document never scrolls or bounces (iOS would drag the header with it) and only the app's own panes scroll. Without it the page scrolls normally.
+
+- **Single page** (default for simple apps): remove `data-shell` from `index.html` and render content directly in `app-main`, with no `tk-shell` or `tk-header`. `tk-sheet`, `tk-toasts` and `sharedStyles` work as before.
+- **App with navigation**: keep `data-shell` and the `tk-shell` + `tk-header` structure from the starter.
+
+`e2e/app.spec.ts` is layout-agnostic and stays in every app; the shell assertions live in `e2e/starter.spec.ts`, which you delete with the starter section.
+
 ## Rules
 
 - Import the kit and Lit only by URL (`https://kit.thatsit.app/kit.js`, `https://kit.thatsit.app/lit.js`), never `from "lit"`: a second Lit copy breaks styles.

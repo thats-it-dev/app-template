@@ -5,17 +5,19 @@ import { expect, test } from "./csp.ts";
 const KIT = "https://kit.thatsit.app/";
 const { title } = loadConfig();
 
-test("renders the kit shell", async ({ page }) => {
+// Layout-agnostic "the app is up": a single page has no tk-shell/tk-header, so wait for app-main's own render.
+const rendered = (page: Page) => page.waitForFunction(() => (document.querySelector("app-main")?.shadowRoot?.childElementCount ?? 0) > 0);
+
+test("loads the kit and sets the page title", async ({ page }) => {
 	await page.goto("/");
-	await expect(page.locator("tk-shell")).toBeVisible();
-	await expect(page.locator("tk-header")).toContainText(title);
-	await expect(page.locator("tk-sheet")).toBeAttached();
-	await expect(page.locator("tk-toasts")).toBeAttached();
+	await rendered(page);
+	await expect(page).toHaveTitle(title);
+	expect(await page.evaluate(() => customElements.get("tk-sheet") !== undefined && customElements.get("tk-toasts") !== undefined)).toBe(true);
 });
 
 test("loads one Lit", async ({ page }) => {
 	await page.goto("/");
-	await expect(page.locator("tk-header")).toBeVisible();
+	await rendered(page);
 	expect(await page.evaluate(() => (globalThis as unknown as { litElementVersions: string[] }).litElementVersions.length)).toBe(1);
 });
 
@@ -47,20 +49,20 @@ for (const colorScheme of ["light", "dark"] as const) {
 		await ctx.close();
 		await page.emulateMedia({ colorScheme });
 		await page.goto("/");
-		await expect(page.locator("tk-header")).toBeVisible();
+		await rendered(page);
 		expect({ body: await bodyLook(page), btn: await btnLook(page) }).toEqual(expected);
 	});
 }
 
 test("works offline after first load", async ({ page, context }) => {
 	await page.goto("/");
-	await expect(page.locator("tk-header")).toBeVisible();
+	await rendered(page);
 	await page.evaluate(() => navigator.serviceWorker.ready);
 	await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
 	// The worker activates (and claims the page) only after install, which caches the precache list and the kit files.
 	await context.setOffline(true);
 	await page.reload();
-	await expect(page.locator("tk-header")).toBeVisible();
+	await rendered(page);
 	expect(await page.evaluate(() => getComputedStyle(document.body).fontFamily)).toContain("Inter");
 });
 
