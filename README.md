@@ -34,6 +34,6 @@ Use the `cf` CLI; find exact commands with `cf cli search "<task>"`.
 
 1. Create the project with production branch `main`: `cf pages create <name>`.
 2. Attach the custom domain `<name>.thatsit.app`: `cf pages domains create`.
-3. Add a proxied CNAME `<name>` pointing to `<name>.pages.dev`: `cf dns records create`.
+3. Add a proxied CNAME `<name>` pointing to the project's `subdomain` from the `cf pages create` output (usually `<name>.pages.dev`, but Cloudflare adds a suffix such as `<name>-930.pages.dev` when that name is taken): `cf dns records create`.
 
 This is how kit.thatsit.app was set up. The thatsit-app pi skill will do these steps automatically.
