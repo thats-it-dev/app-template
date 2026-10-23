@@ -6,6 +6,7 @@ const KIT = "https://kit.thatsit.app/";
 const { title } = loadConfig();
 
 // Layout-agnostic "the app is up": a single page has no tk-shell/tk-header, so wait for app-main's own render.
+// This needs app-main to render into its shadow root (no createRenderRoot override).
 const rendered = (page: Page) => page.waitForFunction(() => (document.querySelector("app-main")?.shadowRoot?.childElementCount ?? 0) > 0);
 
 test("loads the kit and sets the page title", async ({ page }) => {
