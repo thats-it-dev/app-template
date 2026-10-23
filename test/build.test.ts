@@ -33,4 +33,14 @@ describe("vite build", () => {
 			expect(js).not.toContain("LitElement.prototype");
 		}
 	});
+
+	it("fills in the service worker", () => {
+		const sw = dist("sw.js");
+		expect(sw).not.toContain("__PRECACHE__");
+		expect(sw).not.toContain("__VERSION__");
+		expect(sw).toMatch(/app-\$\{"[0-9a-f]{10}"\}/);
+		const files = readdirSync(new URL("dist/assets/", root));
+		expect(files.length).toBeGreaterThan(0);
+		for (const f of files) expect(sw).toContain(`"/assets/${f}"`);
+	});
 });

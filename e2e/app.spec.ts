@@ -75,18 +75,15 @@ test("works offline after first load", async ({ page, context }) => {
 	await page.evaluate(() => navigator.serviceWorker.ready);
 	await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
 	// The install step caches the kit files; wait until they are all in.
-	await expect.poll(() => page.evaluate(async () => (await (await caches.open("app-v1")).keys()).length)).toBeGreaterThanOrEqual(7);
+	await expect.poll(() => page.evaluate(async () => { const [name] = (await caches.keys()).filter((k) => k.startsWith("app-")); return name ? (await (await caches.open(name)).keys()).length : 0; })).toBeGreaterThanOrEqual(9);
 	await context.setOffline(true);
 	await page.reload();
 	await expect(page.locator("tk-header")).toBeVisible();
 	expect(await page.evaluate(() => getComputedStyle(document.body).fontFamily)).toContain("Inter");
 });
 
-test("explains a missing kit", async ({ browser }, info) => {
-	const ctx = await browser.newContext(info.project.use);
-	const page = await ctx.newPage();
+test("explains a missing kit", async ({ page }) => {
 	await page.route(`${KIT}**`, (r) => r.abort());
 	await page.goto("/");
 	await expect(page.getByText("Couldn't load the kit")).toBeVisible();
-	await ctx.close();
 });

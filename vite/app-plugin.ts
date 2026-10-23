@@ -1,4 +1,6 @@
-import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import type { Plugin } from "vite";
 import { type AppConfig, loadConfig } from "./config.ts";
 import { parseHeaders } from "./headers.ts";
@@ -49,6 +51,22 @@ export function thatsitApp(): Plugin[] {
 			},
 			generateBundle() {
 				this.emitFile({ type: "asset", fileName: "manifest.webmanifest", source: manifest });
+			},
+			// public/ is copied after generateBundle, so dist/sw.js is rewritten once it exists. Hashed
+			// file names make the list (and so the version) change whenever any asset's content does.
+			writeBundle(options, bundle) {
+				const assets = Object.keys(bundle).filter((f) => f.startsWith("assets/")).sort();
+				const precache = ["/", "/manifest.webmanifest", "/icons/icon.svg", ...assets.map((f) => `/${f}`)];
+				const html = bundle["index.html"];
+				const version = createHash("sha256")
+					.update(JSON.stringify(precache))
+					.update(html && "source" in html ? String(html.source) : "")
+					.update(manifest)
+					.digest("hex")
+					.slice(0, 10);
+				const file = join(options.dir ?? "dist", "sw.js");
+				const sw = readFileSync(file, "utf8");
+				writeFileSync(file, sw.replace("__VERSION__", version).replace('"__PRECACHE__"', precache.map((p) => JSON.stringify(p)).join(", ")));
 			},
 			// iOS 27's Add to Home Screen sheet fetches the apple-touch-icon with its own
 			// loader, which fails on a network URL and leaves a letter tile; an icon

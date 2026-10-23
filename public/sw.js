@@ -5,32 +5,27 @@
 // files are cached at install so the app starts offline. Those requests use CORS mode:
 // an opaque response can't be checked with res.ok, so a failure could be cached.
 // Other cross-origin requests are not touched.
-// Install also caches the /assets/ files index.html references, and the dynamic chunk the
-// entry names: the first load runs before this worker controls the page, so "fetch" never saw them.
+// The build fills in VERSION and PRECACHE (vite/app-plugin.ts): every emitted file under
+// assets/ plus the shell, cached at install because the first load runs before this worker
+// controls the page. sw.js changes with every build, which is what makes clients update.
 // Lookups ignore Vary: module scripts send Origin, precached requests don't, and a
 // "Vary: Origin" response would then never match offline.
+// Kit files are requested no-cors by the page (a stylesheet link, a classic script); an
+// opaque response can't be checked, so the worker fetches them itself in CORS mode.
 // Bumping CACHE drops every older cache on activation.
-const CACHE = "app-v1";
-const SHELL = ["/", "/manifest.webmanifest", "/icons/icon.svg"];
-// Module scripts send an Origin header that precached requests lack; a "Vary: Origin" response would then never match.
+const CACHE = `app-${"__VERSION__"}`;
+const PRECACHE = ["__PRECACHE__"];
 const MATCH = { ignoreVary: true };
 const KIT_ORIGIN = "https://kit.thatsit.app";
 const KIT = ["kit.css", "kit.js", "lit.js", "theme-init.js"].map((f) => `${KIT_ORIGIN}/${f}`);
 
+const kitRequest = (url) => new Request(url, { mode: "cors", credentials: "omit" });
+
 self.addEventListener("install", (event) => {
 	event.waitUntil(
 		caches.open(CACHE).then(async (c) => {
-			await c.addAll(SHELL);
-			// The first load happens before this worker controls the page, so its hashed assets were never seen by "fetch".
-			const html = await (await c.match("/")).text();
-			const entries = [...html.matchAll(/(?:src|href)="(\/assets\/[^"]+)"/g)].map((m) => m[1]);
-			await c.addAll(entries);
-			// Chunks the entry imports dynamically (main.ts splits the app from the kit import) are named "./x.js" in it.
-			for (const e of entries.filter((e) => e.endsWith(".js"))) {
-				const js = await (await c.match(e)).text();
-				await c.addAll([...js.matchAll(/["'`]\.\/([\w.-]+\.js)["'`]/g)].map((m) => `/assets/${m[1]}`));
-			}
-			await Promise.all(KIT.map((u) => c.add(new Request(u, { mode: "cors" }))));
+			await c.addAll(PRECACHE);
+			await Promise.all(KIT.map((u) => c.add(kitRequest(u))));
 		}),
 	);
 	self.skipWaiting();
@@ -66,10 +61,11 @@ self.addEventListener("fetch", (event) => {
 		return;
 	}
 	const fromNetwork = () =>
-		fetch(req).then((res) => {
-			if (res.ok) {
+		fetch(kit ? kitRequest(req.url) : req).then((res) => {
+			// A host's SPA fallback answers unknown /assets/ paths with 200 HTML; never keep that.
+			if (res.ok && !(res.headers.get("content-type") || "").includes("text/html")) {
 				const copy = res.clone();
-				caches.open(CACHE).then((c) => c.put(req, copy));
+				caches.open(CACHE).then((c) => c.put(req.url, copy));
 			}
 			return res;
 		});
