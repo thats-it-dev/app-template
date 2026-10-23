@@ -1,0 +1,6 @@
+node_modules
+dist
+.kit
+.kit.tmp
+test-results
+playwright-report
