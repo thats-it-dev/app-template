@@ -12,7 +12,7 @@ export function manifestFor(c: AppConfig): object {
 	return {
 		id: "/",
 		name: c.title,
-		short_name: c.name,
+		short_name: c.title,
 		description: c.description,
 		start_url: "/",
 		scope: "/",
@@ -26,6 +26,15 @@ export function manifestFor(c: AppConfig): object {
 			icon("/icons/icon-maskable-512.png", 512, "maskable"),
 		],
 	};
+}
+
+const escapeHtml = (s: string) => s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+
+export function fillHtml(html: string, c: AppConfig): string {
+	return html
+		.replaceAll("%APP_TITLE%", escapeHtml(c.title))
+		.replaceAll("%APP_DESCRIPTION%", escapeHtml(c.description))
+		.replaceAll("%APP_NAME%", escapeHtml(c.name));
 }
 
 export function thatsitApp(): Plugin[] {
@@ -73,11 +82,7 @@ export function thatsitApp(): Plugin[] {
 			// embedded as a data: URI works. The 180px PNG (2 KB) is inlined from the
 			// same file the icon script writes, so there is one source of truth.
 			transformIndexHtml: (html) =>
-				html
-					.replaceAll("%APP_TITLE%", config.title)
-					.replaceAll("%APP_DESCRIPTION%", config.description)
-					.replaceAll("%APP_NAME%", config.name)
-					.replace("__APPLE_TOUCH_ICON__", `data:image/png;base64,${read("../public/apple-touch-icon.png").toString("base64")}`),
+				fillHtml(html, config).replace("__APPLE_TOUCH_ICON__", `data:image/png;base64,${read("../public/apple-touch-icon.png").toString("base64")}`),
 		},
 	];
 }

@@ -33,23 +33,37 @@ jobs:
       - run: npm test
       - run: npx playwright install --with-deps chromium
       - run: npm run e2e
-      - name: Deploy to Cloudflare Pages
-        id: deploy
-        if: env.CLOUDFLARE_API_TOKEN != ''
+      # A fresh copy of the template still says app-template; deploying then would overwrite the template's demo.
+      - name: Check the app was renamed
+        id: guard
         env:
-          EVENT: ${{ github.event_name }}
-          HEAD_REF: ${{ github.head_ref }}
+          REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
           NAME=$(node -p "require('./app.config.json').name")
-          if [ "$EVENT" = "pull_request" ]; then BRANCH="$HEAD_REF"; else BRANCH=main; fi
+          if [ "$NAME" = "app-template" ] && [ "$REPO" != "thats-it-dev/app-template" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Deploy skipped: app.config.json still has name app-template. Edit it first." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Deploy to Cloudflare Pages
+        id: deploy
+        if: env.CLOUDFLARE_API_TOKEN != '' && steps.guard.outputs.skip != 'true'
+        env:
+          EVENT: ${{ github.event_name }}
+          HEAD_REF: ${{ github.head_ref }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          NAME=$(node -p "require('./app.config.json').name")
+          # Production only from main; any other branch (including a manual run) is a preview.
+          if [ "$EVENT" = "pull_request" ]; then BRANCH="$HEAD_REF"; else BRANCH="$REF_NAME"; fi
           npm run build
           npx wrangler@4.149.0 pages deploy dist --project-name "$NAME" --branch "$BRANCH" | tee deploy.log
           URL=$(node scripts/preview-url.ts < deploy.log)
           echo "url=$URL" >> "$GITHUB_OUTPUT"
           echo "Deployed: $URL" >> "$GITHUB_STEP_SUMMARY"
       - name: Comment preview link
-        if: env.CLOUDFLARE_API_TOKEN != '' && github.event_name == 'pull_request'
+        if: env.CLOUDFLARE_API_TOKEN != '' && steps.guard.outputs.skip != 'true' && github.event_name == 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
@@ -59,8 +73,8 @@ jobs:
         run: |
           set -euo pipefail
           BODY=$(printf '<!-- thatsit-preview -->\nPreview: %s\n\nCommit %s' "$URL" "${SHA:0:7}")
-          ID=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
-            --jq '[.[] | select(.body | contains("<!-- thatsit-preview -->"))][0].id // empty' | head -n1)
+          ID=$(gh api "repos/$REPO/issues/$PR/comments?per_page=100" --paginate --jq \
+            '.[] | select(.user.login == "github-actions[bot]" and (.body | contains("<!-- thatsit-preview -->"))) | .id' | jq -rs '.[0] // empty')
           if [ -n "$ID" ]; then
             gh api -X PATCH "repos/$REPO/issues/comments/$ID" -f body="$BODY" > /dev/null
           else

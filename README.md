@@ -6,7 +6,7 @@ GitHub template for small static PWAs on [thatsit.app](https://thatsit.app), bui
 
 1. Edit `app.config.json`: `name` is the Pages project and the subdomain (`<name>.thatsit.app`), plus `title`, `description` and the icon `color`.
 2. Run `npm run icons` to regenerate the icons from that color.
-3. Replace the `<section>` in `src/app-main.ts` with your app.
+3. Replace the `<section>` in `src/app-main.ts` with your app, and delete `e2e/starter.spec.ts` (it tests the starter buttons).
 
 ## Rules
 
@@ -22,7 +22,7 @@ GitHub template for small static PWAs on [thatsit.app](https://thatsit.app), bui
 
 `.github/workflows/deploy.yml` runs typecheck, tests and e2e, then uploads `dist` with wrangler:
 
-- Push to `main`: production deploy of the Pages project `<name>`.
+- Push to `main`: production deploy of the Pages project `<name>`. The deploy is skipped while `name` is still `app-template` in a repo other than the template itself, so edit `app.config.json` first.
 - Pull request: preview deploy of the branch. The link is posted as one sticky PR comment (updated on each push) and written to the job summary.
 - Fork PRs have no secrets, so they run the checks but skip the deploy.
 
@@ -36,4 +36,4 @@ Use the `cf` CLI; find exact commands with `cf cli search "<task>"`.
 2. Attach the custom domain `<name>.thatsit.app`: `cf pages domains create`.
 3. Add a proxied CNAME `<name>` pointing to `<name>.pages.dev`: `cf dns records create`.
 
-This is how kit.thatsit.app was set up. The thatsit-app pi skill (Phase 3) will do these steps automatically.
+This is how kit.thatsit.app was set up. The thatsit-app pi skill will do these steps automatically.

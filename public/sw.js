@@ -69,6 +69,9 @@ self.addEventListener("fetch", (event) => {
 			}
 			return res;
 		});
+	// Caveat: an old open page that lazily loads a chunk after a new deploy gets no file here
+	// (the old hash is gone and Pages answers with HTML). Apps that code-split should reload
+	// the page when a dynamic import fails.
 	if (!kit && url.pathname.startsWith("/assets/")) {
 		event.respondWith(caches.match(req, MATCH).then((hit) => hit || fromNetwork()));
 		return;

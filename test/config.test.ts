@@ -19,7 +19,8 @@ describe("parseConfig", () => {
 });
 
 describe("loadConfig", () => {
-	it("reads the committed app.config.json", () => {
-		expect(loadConfig().name).toBe("app-template");
+	// Shape only: apps copied from the template edit this file.
+	it("parses the committed app.config.json", () => {
+		expect(() => loadConfig()).not.toThrow();
 	});
 });

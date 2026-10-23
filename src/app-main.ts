@@ -1,7 +1,7 @@
 import { LitElement, html, css } from "https://kit.thatsit.app/lit.js";
 import { sharedStyles, toast } from "https://kit.thatsit.app/kit.js";
 
-// The Phase 3 skill replaces the <section>; keep the shell, header, sheet and toasts.
+// The thatsit-app skill replaces the <section>; keep the shell, header, sheet and toasts.
 export class AppMain extends LitElement {
 	static properties = { sheetOpen: { state: true } };
 	static styles = [

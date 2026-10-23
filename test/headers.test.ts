@@ -28,6 +28,11 @@ describe("public/_headers", () => {
 		expect(csp).toContain(part);
 	});
 
+	it("caches hashed assets for a year", () => {
+		const all = parseHeaders(readFileSync(new URL("../public/_headers", import.meta.url), "utf8"));
+		expect(all["/assets/*"]["Cache-Control"]).toBe("public, max-age=31536000, immutable");
+	});
+
 	it("sets the other security headers", () => {
 		expect(h["X-Content-Type-Options"]).toBe("nosniff");
 		expect(h["Referrer-Policy"]).toBe("strict-origin-when-cross-origin");
