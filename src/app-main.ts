@@ -21,7 +21,7 @@ export class AppMain extends LitElement {
 				<nav slot="nav"><a class="u on" href="">Home</a></nav>
 				<tk-header menu-label="Open menu"><h1 slot="title">${__APP_TITLE__}</h1></tk-header>
 				<section>
-					<p>This app was made from the thatsit.app template.</p>
+					<p>This app was made from the thatsit.app template (preview test).</p>
 					<div class="row">
 						<button class="btn" @click=${() => (this.sheetOpen = true)}>Open sheet</button>
 						<button class="btn ghost" @click=${() => toast("Saved")}>Show toast</button>
