@@ -9,7 +9,7 @@ export class TkTailnetOnly extends LitElement {
 		return html`
 			<div class="card">
 				<h2>Only works on the tailnet</h2>
-				<p>Connect this device to Michael's tailnet, then</p>
+				<p>Connect this device to Michael's tailnet, then try again. If you are on the tailnet, the gateway may not know this app yet.</p>
 				<button class="btn" @click=${() => this.dispatchEvent(new CustomEvent("retry", { bubbles: true, composed: true }))}>Try again</button>
 			</div>
 		`;

@@ -19,6 +19,7 @@ test("off the tailnet the app can show <tk-tailnet-only>", async ({ page }) => {
 	await page.evaluate(() => document.body.append(document.createElement("tk-tailnet-only")));
 	const el = page.locator("tk-tailnet-only");
 	await expect(el.getByText("Only works on the tailnet")).toBeVisible();
+	await expect(el.getByText("Connect this device to Michael's tailnet, then try again. If you are on the tailnet, the gateway may not know this app yet.")).toBeVisible();
 	await expect(el.getByRole("button", { name: "Try again" })).toBeVisible();
 	expect(blocked.length).toBeGreaterThan(0);
 });
