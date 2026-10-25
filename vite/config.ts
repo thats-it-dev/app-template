@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 
-export type AppConfig = { name: string; title: string; description: string; color: string };
+export type AppConfig = { name: string; title: string; description: string; color: string; gateway?: true };
 
 // Same rule as the Pages project name and the subdomain.
 const NAME = /^[a-z](?:[a-z0-9-]{0,28}[a-z0-9])?$/;
@@ -18,7 +18,8 @@ export function parseConfig(raw: unknown): AppConfig {
 	if (!NAME.test(name)) throw new Error(`app.config.json: "name" must match ${NAME} (got "${name}")`);
 	const color = str("color");
 	if (!COLOR.test(color)) throw new Error(`app.config.json: "color" must be #RRGGBB (got "${color}")`);
-	return { name, title: str("title"), description: str("description"), color };
+	if (r.gateway !== undefined && typeof r.gateway !== "boolean") throw new Error(`app.config.json: "gateway" must be true or absent`);
+	return { name, title: str("title"), description: str("description"), color, ...(r.gateway === true ? { gateway: true as const } : {}) };
 }
 
 export function loadConfig(path: string | URL = new URL("../app.config.json", import.meta.url)): AppConfig {

@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Plugin } from "vite";
 import { type AppConfig, loadConfig } from "./config.ts";
+import { gatewayHeaders, gatewayUrl } from "./gateway.ts";
 import { parseHeaders } from "./headers.ts";
 
 const read = (p: string) => readFileSync(new URL(p, import.meta.url));
@@ -39,14 +40,21 @@ export function fillHtml(html: string, c: AppConfig): string {
 
 export function thatsitApp(): Plugin[] {
 	const config = loadConfig();
+	const headersText = () => gatewayHeaders(read("../public/_headers").toString("utf8"), config, process.env.GATEWAY_URL);
 	const manifest = JSON.stringify(manifestFor(config), null, "\t") + "\n";
 	return [
 		{
 			name: "thatsit-app",
-			config: () => ({ define: { __APP_TITLE__: JSON.stringify(config.title) } }),
+			config: () => ({
+				define: {
+					__APP_TITLE__: JSON.stringify(config.title),
+					__APP_NAME__: JSON.stringify(config.name),
+					__GATEWAY_URL__: JSON.stringify(gatewayUrl(config, process.env.GATEWAY_URL)),
+				},
+			}),
 			// Static headers for `vite preview`; Pages enforces the same file in production.
 			configurePreviewServer: (server) => {
-				const h = parseHeaders(read("../public/_headers").toString("utf8"))["/*"] ?? {};
+				const h = parseHeaders(headersText())["/*"] ?? {};
 				server.middlewares.use((_req, res, next) => {
 					for (const [k, v] of Object.entries(h)) res.setHeader(k, v);
 					next();
@@ -75,6 +83,7 @@ export function thatsitApp(): Plugin[] {
 					.slice(0, 10);
 				const file = join(options.dir ?? "dist", "sw.js");
 				const sw = readFileSync(file, "utf8");
+				if (config.gateway) writeFileSync(join(options.dir ?? "dist", "_headers"), headersText());
 				writeFileSync(file, sw.replace("__VERSION__", version).replace('"__PRECACHE__"', precache.map((p) => JSON.stringify(p)).join(", ")));
 			},
 			// iOS 27's Add to Home Screen sheet fetches the apple-touch-icon with its own

@@ -4,3 +4,4 @@ dist
 .kit.tmp
 test-results
 playwright-report
+.vitest

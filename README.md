@@ -29,6 +29,28 @@ GitHub template for small static PWAs on [thatsit.app](https://thatsit.app), bui
 
 `npm run dev`, `build`, `preview`, `typecheck` (tsc), `test` (vitest), `e2e` (Playwright, Chromium; set `BASE_URL` to test a deployed site instead of building locally), `icons`, `kit-types` (fetches the kit's `.d.ts` into `.kit/`; runs automatically before dev, build and typecheck).
 
+## Spark data (gateway)
+
+Apps can read system stats and keep their own small JSON store on spark-gateway, a backend reachable only from Michael's tailnet.
+
+1. Set `"gateway": true` in `app.config.json`. The build then defines `__GATEWAY_URL__` and adds the gateway origin to `connect-src` in `dist/_headers` (`public/_headers` stays as is). Without the flag nothing changes.
+2. Import the client: `import { kv, system, OffTailnetError } from "./gateway.ts"` and `import "./tailnet-only.ts"`. `kv.get/put/del/list(collection, ...)` work on `/apps/<name>/kv/...` (your own store only); `system.models()`, `gpu()` and `sessions()` read stats. Ids match `[A-Za-z0-9_-]{1,128}`, collections `[a-z0-9-]{1,64}`, values are JSON objects up to 256 KiB.
+3. Catch `OffTailnetError` (the request never got an answer) and render `<tk-tailnet-only @retry=${...}>`. A `GatewayError` (has `status`) is a real HTTP error, not a connectivity problem.
+
+```ts
+try {
+	this.notes = await kv.list("notes");
+} catch (e) {
+	if (e instanceof OffTailnetError) this.offline = true;
+	else throw e;
+}
+// render(): this.offline ? html`<tk-tailnet-only @retry=${() => this.load()}></tk-tailnet-only>` : ...
+```
+
+Tests never reach the gateway: stub it with `page.route("https://*.ts.net:*/**", ...)` (fulfill with JSON, or `abort()` for the off-tailnet state). `e2e/gateway.spec.ts` runs only when `gateway` is true.
+
+PR previews: add a line `Gateway: thats-it-dev/spark-gateway#<N>` (N from 1 to 499) to the PR body to build the preview against that gateway PR's preview (port 9500+N). The sticky comment then shows `Gateway preview: <url>`.
+
 ## Deploys
 
 `.github/workflows/deploy.yml` runs typecheck, tests and e2e, then uploads `dist` with wrangler:
