@@ -29,6 +29,40 @@ GitHub template for small static PWAs on [thatsit.app](https://thatsit.app), bui
 
 `npm run dev`, `build`, `preview`, `typecheck` (tsc), `test` (vitest), `e2e` (Playwright, Chromium; set `BASE_URL` to test a deployed site instead of building locally), `icons`, `kit-types` (fetches the kit's `.d.ts` into `.kit/`; runs automatically before dev, build and typecheck).
 
+## Spark data (gateway)
+
+Apps can read system stats and keep their own small JSON store on spark-gateway, a backend reachable only from Michael's tailnet.
+
+1. Set `"gateway": true` in `app.config.json`. The build then defines `__GATEWAY_URL__` and adds the gateway origin to `connect-src` in `dist/_headers` (`public/_headers` stays as is). Without the flag nothing changes.
+2. Import the client: `import { kv, system, GatewayError, OffTailnetError } from "./gateway.ts"` and `import "./tailnet-only.ts"`. The store is your app's own (`/apps/<name>/kv/...`). Ids match `[A-Za-z0-9_-]{1,128}`, collections `[a-z0-9-]{1,64}`, values are JSON objects up to 256 KiB (50 MiB per app). Results (types exported from `gateway.ts`):
+   - `kv.get<T>(collection, id)` -> `KvGet<T>` `{ value, updatedAt }`. A missing id throws `GatewayError` with `status` 404: treat 404 as missing.
+   - `kv.put<T>(collection, id, value)` -> `{ updatedAt }`; `kv.del(collection, id)` -> `{ deleted: true }` (404 if missing).
+   - `kv.list<T>(collection, { limit?, cursor? })` -> `KvList<T>` `{ items: [{ id, value, updatedAt }], cursor? }`, newest first. `limit` defaults to 50, max 200; pass `cursor` back for the next page, it is absent on the last one.
+   - `system.models()` -> `Models` `{ models: [{ id, status, loaded, state? }] }`; `system.gpu()` -> `Gpu` `{ gpus: [{ name, utilizationPercent }], memory: { totalBytes, availableBytes } }` (`utilizationPercent` may be `null`); `system.sessions()` -> `Sessions` `{ sessions: [{ id, cwd, name?, model?, startedAt, lastActivityAt }] }`.
+   - Calling any of them without `"gateway": true` throws `set "gateway": true in app.config.json`.
+3. Catch `OffTailnetError` (the request never got an answer) and render `<tk-tailnet-only @retry=${...}>`. A `GatewayError` (has `status`) is a real HTTP error, not a connectivity problem (a 2xx that is not JSON also throws one, `invalid JSON from gateway`).
+
+```ts
+type Note = { title: string };
+try {
+	const { items, cursor } = await kv.list<Note>("notes"); // first 50; kv.list("notes", { cursor }) for more
+	this.notes = items.map((i) => i.value);
+	try {
+		this.pinned = (await kv.get<Note>("notes", "pinned")).value;
+	} catch (e) {
+		if (!(e instanceof GatewayError && e.status === 404)) throw e; // 404: no such note yet
+	}
+} catch (e) {
+	if (e instanceof OffTailnetError) this.offline = true;
+	else throw e;
+}
+// render(): this.offline ? html`<tk-tailnet-only @retry=${() => this.load()}></tk-tailnet-only>` : ...
+```
+
+Tests never reach the gateway: stub it with `page.route("https://*.ts.net:*/**", ...)` (fulfill with JSON, or `abort()` for the off-tailnet state). `e2e/gateway.spec.ts` runs only when `gateway` is true.
+
+PR previews: add a line `Gateway: thats-it-dev/spark-gateway#<N>` (N from 1 to 499) to the PR body to build the preview against that gateway PR's preview (port 9500+N). The sticky comment then shows `Gateway preview: <url>`.
+
 ## Deploys
 
 `.github/workflows/deploy.yml` runs typecheck, tests and e2e, then uploads `dist` with wrangler:

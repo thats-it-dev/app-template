@@ -24,3 +24,15 @@ describe("loadConfig", () => {
 		expect(() => loadConfig()).not.toThrow();
 	});
 });
+
+describe("gateway flag", () => {
+	const ok = { name: "app-template", title: "App template", description: "Starter", color: "#FFAA00" };
+	it("is optional and true enables it", () => {
+		expect(parseConfig(ok).gateway).toBeUndefined();
+		expect(parseConfig({ ...ok, gateway: true }).gateway).toBe(true);
+		expect(parseConfig({ ...ok, gateway: false }).gateway).toBeUndefined();
+	});
+	it.each(["yes", 1, null])("rejects %s", (gateway) => {
+		expect(() => parseConfig({ ...ok, gateway })).toThrow(/gateway/);
+	});
+});
