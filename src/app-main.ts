@@ -1,7 +1,7 @@
 import { LitElement, html, css } from "https://kit.thatsit.app/lit.js";
 import { sharedStyles, toast } from "https://kit.thatsit.app/kit.js";
 
-// The thatsit-app skill replaces the <section>; keep the shell, header, sheet and toasts.
+// Starter for an app with navigation. See README "Layouts": keep the shell for nav apps, or replace the whole render for a single page.
 export class AppMain extends LitElement {
 	static properties = { sheetOpen: { state: true } };
 	static styles = [
