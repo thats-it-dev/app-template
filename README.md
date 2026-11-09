@@ -4,7 +4,7 @@ GitHub template for small static PWAs on [thatsit.app](https://thatsit.app), bui
 
 ## New app
 
-1. Edit `app.config.json`: `name` is the Pages project and the subdomain (`<name>.thatsit.app`), plus `title`, `description` and the icon `color`.
+1. Edit `app.config.json`: `name` is the Pages project and the subdomain (`<name>.thatsit.app`), plus `title`, `description` and the icon `color`. Set the same `name` in `package.json` and `package-lock.json`.
 2. Run `npm run icons` to regenerate the icons from that color.
 3. Replace the starter in `src/app-main.ts` with your app (see [Layouts](#layouts)), and delete `e2e/starter.spec.ts` (it tests the starter shell and buttons).
 
@@ -27,7 +27,9 @@ GitHub template for small static PWAs on [thatsit.app](https://thatsit.app), bui
 
 ## Scripts
 
-`npm run dev`, `build`, `preview`, `typecheck` (tsc), `test` (vitest), `e2e` (Playwright, Chromium; set `BASE_URL` to test a deployed site instead of building locally), `icons`, `kit-types` (fetches the kit's `.d.ts` into `.kit/`; runs automatically before dev, build and typecheck).
+`npm run dev`, `build`, `preview`, `typecheck` (tsc), `test` (vitest, including the repo guardrails in `test/guardrails.test.ts`), `lint` (knip: unused files, exports and dependencies), `e2e` (Playwright, Chromium; set `BASE_URL` to test a deployed site instead of building locally), `e2e:one` (one spec on desktop only: `npm run e2e:one -- e2e/x.spec.ts`), `verify` (all of the above before a commit), `icons`, `kit-types` (fetches the kit's `.d.ts` into `.kit/`; runs automatically before dev, build and typecheck).
+
+Agents: read `AGENTS.md`.
 
 ## Spark data (gateway)
 
