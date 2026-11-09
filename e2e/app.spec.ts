@@ -64,7 +64,7 @@ test("works offline after first load", async ({ page, context }) => {
 	await context.setOffline(true);
 	await page.reload();
 	await rendered(page);
-	expect(await page.evaluate(() => getComputedStyle(document.body).fontFamily)).toContain("Inter");
+	expect(await page.evaluate(() => getComputedStyle(document.body).fontFamily)).toContain("Nunito");
 });
 
 test("explains a missing kit", async ({ page }) => {
