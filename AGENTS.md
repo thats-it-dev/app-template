@@ -37,6 +37,16 @@ Averages, counts, timers, speeds and merges need tests with **varied** input, no
 - merging a record with itself, or applying the same update twice, must not double anything
 - randomness: pass a seeded random function in, and test that different seeds give different output
 
+## Output that changes as the user goes along
+
+Generated content (words, lines, puzzles, schedules) and anything that follows the user's progress
+(levels, unlocks, difficulty) must be checked at **every** stage, not only the first:
+
+- before the PR, print real output at the first, a middle and the last stage (for example 6 letters
+  unlocked, 14, all 26) and read it as the user would; fix anything a person would not accept
+- each rule the request states ("every word has the focused letter", "never a doubled space") gets a
+  test that loops over all stages, with stats from a user partway through, not only a fresh start
+
 ## Fixing a bug
 
 1. Write the test first and run it. It must fail, for the reason the bug describes; quote the failure in
