@@ -30,6 +30,12 @@ describe("guardrails", () => {
 		expect(long, "split these into modules by responsibility (see AGENTS.md)").toEqual([]);
 	});
 
+	it("CI's Playwright image matches the @playwright/test version", () => {
+		const want = JSON.parse(read("package.json")).devDependencies?.["@playwright/test"];
+		const image = /mcr\.microsoft\.com\/playwright:v([\d.]+)-/.exec(read(".github/workflows/deploy.yml"))?.[1];
+		expect(image, "set the container tag in .github/workflows/deploy.yml to v<@playwright/test version>-noble").toBe(want);
+	});
+
 	it("e2e tests do not sleep", () => {
 		const sleeps = files("e2e", /\.ts$/).filter((f) => /\bwaitForTimeout\s*\(/.test(read(f)));
 		expect(sleeps, "wait on a condition with expect(...).toPass() or a locator assertion instead").toEqual([]);
