@@ -78,6 +78,7 @@ Generated content (words, lines, puzzles, schedules) and anything that follows t
   version in a comment; that goes in the commit message. Delete a comment the code no longer matches.
 - `package.json` `name` equals `app.config.json` `name`.
 - Side panels: put navigation in tk-shell's nav slot and details in its aside slot. Never build a panel, drawer, scrim or panel toggle yourself; the kit draws them.
+- Numbers and charts: use the kit's `tk-stat`/`tk-stats`, `tk-sparkline`, `tk-timeseries`, `tk-bars` and `tk-heatmap` (kit README "Charts"). On the charts `x`, `y`, `label` and `value` name fields of your rows, not display text. Never draw charts yourself with SVG, canvas or d3, and never pick chart colors.
 - Styling: use kit components, `sharedStyles` classes and kit tokens only (see README "Rules").
 - Accessibility: never convey state by colour alone, and never put `aria-live` on text that changes on
   every keystroke.
