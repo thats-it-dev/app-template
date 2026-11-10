@@ -59,6 +59,12 @@ Averages, counts, timers, speeds and merges need tests with **varied** input, no
 - Accessibility: never convey state by colour alone, and never put `aria-live` on text that changes on
   every keystroke.
 
+## To-do list
+
+- Keep the to-do list current: mark an item completed as soon as it is done, not at the end.
+- Before your final reply, every item is completed or deleted. Delete items that no longer apply. If something is
+  really unfinished, say so in the reply and leave only that item open.
+
 ## Commits
 
 - One subject line in the imperative, `type: summary`, at most 72 characters. Types: `feat`, `fix`,
