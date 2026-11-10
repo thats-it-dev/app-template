@@ -54,6 +54,7 @@ Averages, counts, timers, speeds and merges need tests with **varied** input, no
 - Comments say what the code does and why. Never tell the story of a bug, a measurement or an earlier
   version in a comment; that goes in the commit message. Delete a comment the code no longer matches.
 - `package.json` `name` equals `app.config.json` `name`.
+- Side panels: put navigation in tk-shell's nav slot and details in its aside slot. Never build a panel, drawer, scrim or panel toggle yourself; the kit draws them.
 - Styling: use kit components, `sharedStyles` classes and kit tokens only (see README "Rules").
 - Accessibility: never convey state by colour alone, and never put `aria-live` on text that changes on
   every keystroke.
