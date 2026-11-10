@@ -26,7 +26,7 @@ describe("guardrails", () => {
 		const long = files("src", /\.ts$/)
 			.map((f) => ({ f, n: read(f).split("\n").length }))
 			.filter(({ n }) => n > MAX_LINES)
-			.map(({ f, n }) => `${f}: ${n} lines`);
+			.map(({ f, n }) => `${f}: ${n} lines, ${n - MAX_LINES} over`);
 		expect(long, "split these into modules by responsibility (see AGENTS.md)").toEqual([]);
 	});
 

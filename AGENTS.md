@@ -7,6 +7,7 @@ Read this file before you edit anything. `README.md` covers the kit, layouts, th
 | When | Run |
 | --- | --- |
 | While changing code | `npm run typecheck && npm test` |
+| While splitting files or deleting dead code | `npm run guardrails` (line limit, package name, no e2e sleeps, knip; a few seconds) |
 | While changing one screen | `npm run e2e:one -- e2e/<file>.spec.ts` (desktop only, one spec) |
 | Before every commit | `npm run verify` (typecheck, unit tests, lint, full e2e) |
 
