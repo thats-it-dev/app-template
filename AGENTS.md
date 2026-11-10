@@ -67,6 +67,10 @@ Generated content (words, lines, puzzles, schedules) and anything that follows t
 
 ## Code rules
 
+- Every character you write costs time (the model writes about 34 tokens a second). Change existing
+  files with the edit tool, never a whole-file write: `oldText` is the fewest unique lines that locate
+  the change (usually 1-3), and `newText` repeats as few unchanged lines as possible. Read a file once
+  and read only the lines you need (`offset`/`limit`) when you look again.
 - Files under `src/` stay under 400 lines; `npm test` fails otherwise. Split by responsibility:
   `app-main.ts` only composes components, and each panel, chart or dialog is its own file.
 - No unused exports or files; `npm run lint` (knip) fails otherwise. Delete dead code, don't keep it.
