@@ -22,6 +22,16 @@ describe("guardrails", () => {
 		expect(pkg, "set package.json (and package-lock.json) name to the app name").toBe(app);
 	});
 
+	it("docs/spec.md is written, not the starter", () => {
+		if (JSON.parse(read("package.json")).name === "app-template") return;
+		let spec = "";
+		try {
+			spec = read("docs/spec.md");
+		} catch {}
+		expect(spec, "write docs/spec.md (see AGENTS.md, Spec)").not.toBe("");
+		expect(spec.includes("starter spec:"), "docs/spec.md is still the starter: replace every section from Michael's request").toBe(false);
+	});
+
 	it(`source files stay under ${MAX_LINES} lines`, () => {
 		const long = files("src", /\.ts$/)
 			.map((f) => ({ f, n: read(f).split("\n").length }))
