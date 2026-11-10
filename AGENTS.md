@@ -36,6 +36,15 @@ Averages, counts, timers, speeds and merges need tests with **varied** input, no
 - merging a record with itself, or applying the same update twice, must not double anything
 - randomness: pass a seeded random function in, and test that different seeds give different output
 
+## Fixing a bug
+
+1. Write the test first and run it. It must fail, for the reason the bug describes; quote the failure in
+   the PR.
+2. Then fix the code and run it again until it passes.
+3. Never revert source files to show a test failing (`git checkout <ref> -- <file>`, `git restore`,
+   `git reset --hard`): it deletes your uncommitted work, and the pi guard blocks it. To look at old code,
+   use `git show <ref>:<path>`.
+
 ## Code rules
 
 - Files under `src/` stay under 400 lines; `npm test` fails otherwise. Split by responsibility:
