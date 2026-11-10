@@ -1,7 +1,7 @@
 import { loadConfig } from "../vite/config.ts";
 import { expect, test } from "./csp.ts";
 
-const { title } = loadConfig();
+const { name, title } = loadConfig();
 
 // Tests the starter shell and <section>; delete this file when you replace it.
 test("renders the kit shell", async ({ page }) => {
@@ -10,6 +10,11 @@ test("renders the kit shell", async ({ page }) => {
 	await expect(page.locator("tk-header")).toContainText(title);
 	await expect(page.locator("tk-sheet")).toBeAttached();
 	await expect(page.locator("tk-toasts")).toBeAttached();
+});
+
+test("the shell remembers hidden panels per app", async ({ page }) => {
+	await page.goto("/");
+	await expect(page.locator("tk-shell")).toHaveAttribute("store-key", `${name}:panels`);
 });
 
 test("starter sheet and toast work", async ({ page }) => {

@@ -13,7 +13,7 @@ GitHub template for small static PWAs on [thatsit.app](https://thatsit.app), bui
 `<html data-shell>` in `index.html` is the switch. The kit's `kit.css` uses it to pin `html` and `body` to `height: 100%` with `overflow: hidden` and no overscroll, so the document never scrolls or bounces (iOS would drag the header with it) and only the app's own panes scroll. Without it the page scrolls normally.
 
 - **Single page** (choose this for simple apps): remove `data-shell` from `index.html` and render content directly in `app-main`, with no `tk-shell` or `tk-header`. `tk-sheet`, `tk-toasts` and `sharedStyles` work as before.
-- **App with navigation**: keep `data-shell` and the `tk-shell` + `tk-header` structure from the starter.
+- **App with navigation**: keep `data-shell` and the `tk-shell` + `tk-header` structure from the starter. Put details in `<section slot="aside">` of `tk-shell`. The starter sets `store-key` to `<name>:panels` so each app remembers which panels the user hid on a desktop; keep it (see the kit README "Side panels": https://github.com/thats-it-dev/pi-web/blob/master/kit/README.md#side-panels).
 
 `app-main` must render into its shadow root (don't override `createRenderRoot`); the generic tests wait on that.
 

@@ -17,7 +17,7 @@ export class AppMain extends LitElement {
 
 	render() {
 		return html`
-			<tk-shell nav-label="Pages">
+			<tk-shell nav-label="Pages" store-key=${`${__APP_NAME__}:panels`}>
 				<nav slot="nav"><a class="u on" href="">Home</a></nav>
 				<tk-header menu-label="Open menu"><h1 slot="title">${__APP_TITLE__}</h1></tk-header>
 				<section>
