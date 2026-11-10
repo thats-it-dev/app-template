@@ -21,11 +21,20 @@ Read this file before you edit anything. `README.md` covers the kit, layouts, th
 
 1. **Core logic first.** Put the app's rules (scoring, scheduling, parsing, statistics, merging) in plain
    functions under `src/<area>/`, with unit tests in `test/`. No DOM, no Lit, no storage in those files.
-2. **Clones and "like X" apps:** before writing code, write `docs/spec.md` with the original's actual
-   algorithm, with links to where you read it. Test the core logic against that spec.
+2. **Spec before code.** Replace the starter `docs/spec.md` with what Michael asked for (see **Spec**).
+   Test the core logic against it.
 3. **Stop for Michael.** When the core works, ask him to try it, and wait. Do not start sync, sharing,
    charts or other extras until he confirms the core behaves right.
 4. Then UI, storage, sync and extras, one PR each.
+
+## Spec
+
+`docs/spec.md` is the contract: what the app does, the rules it follows, its data and what it leaves out.
+
+- Read it before changing behaviour. A behaviour change updates it in the same PR; the PR body says what changed.
+- Each behaviour rule is a bullet a test can check. Clones and "like X" apps: the original's actual
+  algorithm, with links to where you read it.
+- `npm test` fails while the file is missing or still the starter.
 
 ## Tests for logic that adds up numbers
 
