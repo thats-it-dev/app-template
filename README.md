@@ -22,13 +22,13 @@ GitHub template for small static PWAs on [thatsit.app](https://thatsit.app), bui
 ## Rules
 
 - Import the kit and Lit only by URL (`https://kit.thatsit.app/kit.js`, `https://kit.thatsit.app/lit.js`), never `from "lit"`: a second Lit copy breaks styles.
-- No custom colors, fonts or radii. Use the kit tokens. The one exception is the icon color in `app.config.json`.
-- Components and tokens are documented at https://kit.thatsit.app/.
+- No custom colors, fonts or radii. Use the kit tokens; AGENTS.md lists them, and `npm test` fails on a `var(--…)` the kit does not define (the check reads `.kit/kit.css`, which `kit-types` fetches). The one exception is the icon color in `app.config.json`.
+- Components are documented at https://kit.thatsit.app/.
 - Charts: use the kit's chart components (`tk-stat`, `tk-sparkline`, `tk-timeseries`, `tk-bars`, `tk-heatmap`); see https://kit.thatsit.app/charts.
 
 ## Scripts
 
-`npm run dev`, `build`, `preview`, `typecheck` (tsc), `test` (vitest, including the repo guardrails in `test/guardrails.test.ts`), `lint` (knip: unused files, exports and dependencies), `guardrails` (the guardrail tests and lint only, in seconds), `e2e` (Playwright, Chromium; set `BASE_URL` to test a deployed site instead of building locally), `e2e:one` (one spec on desktop only: `npm run e2e:one -- e2e/x.spec.ts`), `verify` (all of the above before a commit), `icons`, `kit-types` (fetches the kit's `.d.ts` into `.kit/`; runs automatically before dev, build and typecheck).
+`npm run dev`, `build`, `preview`, `typecheck` (tsc), `test` (vitest, including the repo guardrails in `test/guardrails.test.ts`), `lint` (knip: unused files, exports and dependencies), `guardrails` (the guardrail tests and lint only, in seconds), `e2e` (Playwright, Chromium; set `BASE_URL` to test a deployed site instead of building locally), `e2e:one` (one spec on desktop only: `npm run e2e:one -- e2e/x.spec.ts`), `verify` (all of the above before a commit), `icons`, `kit-types` (fetches the kit's `.d.ts` and `kit.css` into `.kit/`; runs automatically before dev, build, test, guardrails and typecheck).
 
 Agents: read `AGENTS.md`.
 
