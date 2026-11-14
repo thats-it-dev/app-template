@@ -28,7 +28,7 @@ GitHub template for small static PWAs on [thatsit.app](https://thatsit.app), bui
 
 ## Scripts
 
-`npm run dev`, `build`, `preview`, `typecheck` (tsc), `test` (vitest, including the repo guardrails in `test/guardrails.test.ts`), `lint` (knip: unused files, exports and dependencies), `guardrails` (the guardrail tests and lint only, in seconds), `e2e` (Playwright, Chromium; set `BASE_URL` to test a deployed site instead of building locally), `e2e:one` (one spec on desktop only: `npm run e2e:one -- e2e/x.spec.ts`), `verify` (all of the above before a commit), `icons`, `kit-types` (fetches the kit's `.d.ts` into `.kit/`; runs automatically before dev, build and typecheck).
+`npm run dev`, `build`, `preview`, `typecheck` (tsc), `test` (vitest, including the repo guardrails in `test/guardrails.test.ts`), `lint` (knip: unused files, exports and dependencies), `guardrails` (the guardrail tests and lint only, in seconds), `e2e` (Playwright, Chromium; set `BASE_URL` to test a deployed site instead of building locally), `e2e:one` (one spec on desktop only: `npm run e2e:one -- e2e/x.spec.ts`), `verify` (all of the above before a commit), `icons`, `kit-types` (fetches the kit's `.d.ts` and `kit.css` into `.kit/`; runs automatically before dev, build, test, guardrails and typecheck).
 
 Agents: read `AGENTS.md`.
 
