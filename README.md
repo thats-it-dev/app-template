@@ -22,8 +22,8 @@ GitHub template for small static PWAs on [thatsit.app](https://thatsit.app), bui
 ## Rules
 
 - Import the kit and Lit only by URL (`https://kit.thatsit.app/kit.js`, `https://kit.thatsit.app/lit.js`), never `from "lit"`: a second Lit copy breaks styles.
-- No custom colors, fonts or radii. Use the kit tokens. The one exception is the icon color in `app.config.json`.
-- Components and tokens are documented at https://kit.thatsit.app/.
+- No custom colors, fonts or radii. Use the kit tokens; AGENTS.md lists them, and `npm test` fails on a `var(--…)` the kit does not define (the check reads `.kit/kit.css`, which `kit-types` fetches). The one exception is the icon color in `app.config.json`.
+- Components are documented at https://kit.thatsit.app/.
 - Charts: use the kit's chart components (`tk-stat`, `tk-sparkline`, `tk-timeseries`, `tk-bars`, `tk-heatmap`); see https://kit.thatsit.app/charts.
 
 ## Scripts
