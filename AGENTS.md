@@ -87,6 +87,11 @@ Generated content (words, lines, puzzles, schedules) and anything that follows t
   `--shadow-color`, `--code-bg`, `--ring` (focus), `--underline-color`; charts `--chart-1` to `--chart-4`
   (series only). Shape and type: `--radius`, `--font-body`, `--font-display`, `--font-mono`. There is no
   `--tk-*` colour token. Light and dark values come with the token; never pick a colour per theme.
+- UI patterns: https://kit.thatsit.app/ is the design system, every token, class, component, pattern and icon
+  with its code. Before building a settings dialog, a form row, a switch, an icon button, a list with actions,
+  an empty state, a card or a notice, fetch that page and copy its pattern. The switch is
+  `<button class="switch" role="switch" aria-checked>`; a goal bar is `tk-progress`; icons come from the kit
+  (`SETTINGS_ICON`, `TRASH_ICON`, `PENCIL_ICON`, `PLUS_ICON`, `X_ICON`, …, or `ICONS[name]`), never a pasted SVG.
 - Accessibility: never convey state by colour alone, and never put `aria-live` on text that changes on
   every keystroke.
 
