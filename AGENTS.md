@@ -79,7 +79,14 @@ Generated content (words, lines, puzzles, schedules) and anything that follows t
 - `package.json` `name` equals `app.config.json` `name`.
 - Side panels: put navigation in tk-shell's nav slot and details in its aside slot. Never build a panel, drawer, scrim or panel toggle yourself; the kit draws them.
 - Numbers and charts: use the kit's `tk-stat`/`tk-stats`, `tk-sparkline`, `tk-timeseries`, `tk-bars` and `tk-heatmap` (kit README "Charts"). On the charts `x`, `y`, `label` and `value` name fields of your rows, not display text. Never draw charts yourself with SVG, canvas or d3, and never pick chart colors.
-- Styling: use kit components, `sharedStyles` classes and kit tokens only (see README "Rules").
+- Styling: use kit components, `sharedStyles` classes and kit tokens only (see README "Rules"). The kit's
+  tokens are exactly these; `npm test` fails on any other `var(--…)`, and a made-up name renders as no colour
+  at all. Colours: `--bg` (page), `--panel` (a raised surface), `--surface`, `--text-primary`,
+  `--text-secondary`, `--text-muted`, `--border-color`, `--line` (hairlines), `--primary` (brand amber, for
+  the thing to look at), `--accent` (status red), `--success` (status green), `--secondary`, `--overlay`,
+  `--shadow-color`, `--code-bg`, `--ring` (focus), `--underline-color`; charts `--chart-1` to `--chart-4`
+  (series only). Shape and type: `--radius`, `--font-body`, `--font-display`, `--font-mono`. There is no
+  `--tk-*` colour token. Light and dark values come with the token; never pick a colour per theme.
 - Accessibility: never convey state by colour alone, and never put `aria-live` on text that changes on
   every keystroke.
 

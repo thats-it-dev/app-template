@@ -20,7 +20,8 @@
 		"icons": "node scripts/make-icons.ts",
 		"e2e:one": "playwright test --project=desktop",
 		"lint": "knip --no-progress",
-		"guardrails": "vitest run test/guardrails.test.ts && npm run lint",
+		"pretest": "npm run kit-types",
+		"guardrails": "npm run kit-types && vitest run test/guardrails.test.ts && npm run lint",
 		"verify": "npm run typecheck && npm test && npm run lint && npm run e2e"
 	},
 	"devDependencies": {
