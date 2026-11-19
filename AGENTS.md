@@ -79,7 +79,8 @@ Generated content (words, lines, puzzles, schedules) and anything that follows t
 - `package.json` `name` equals `app.config.json` `name`.
 - Side panels: put navigation in tk-shell's nav slot and details in its aside slot. Never build a panel, drawer, scrim or panel toggle yourself; the kit draws them.
 - Numbers and charts: use the kit's `tk-stat`/`tk-stats`, `tk-sparkline`, `tk-timeseries`, `tk-bars` and `tk-heatmap` (kit README "Charts"). On the charts `x`, `y`, `label` and `value` name fields of your rows, not display text. Never draw charts yourself with SVG, canvas or d3, and never pick chart colors.
-- Styling: use kit components, `sharedStyles` classes and kit tokens only (see README "Rules"). The kit's
+- Styling: use kit components, `sharedStyles` classes and kit tokens only (the template README's "Rules", and the
+  UI patterns rule below: an app rewrites its README, this file keeps the rules). The kit's
   tokens are exactly these; `npm test` fails on any other `var(--…)`, and a made-up name renders as no colour
   at all. Colours: `--bg` (page), `--panel` (a raised surface), `--surface`, `--text-primary`,
   `--text-secondary`, `--text-muted`, `--border-color`, `--line` (hairlines), `--primary` (brand amber, for
@@ -89,9 +90,12 @@ Generated content (words, lines, puzzles, schedules) and anything that follows t
   `--tk-*` colour token. Light and dark values come with the token; never pick a colour per theme.
 - UI patterns: https://kit.thatsit.app/ is the design system, every token, class, component, pattern and icon
   with its code. Before building a settings dialog, a form row, a switch, an icon button, a list with actions,
-  an empty state, a card or a notice, fetch that page and copy its pattern. The switch is
-  `<button class="switch" role="switch" aria-checked>`; a goal bar is `tk-progress`; icons come from the kit
-  (`SETTINGS_ICON`, `TRASH_ICON`, `PENCIL_ICON`, `PLUS_ICON`, `X_ICON`, …, or `ICONS[name]`), never a pasted SVG.
+  an empty state, a card or a notice, fetch that page and copy its pattern. A settings dialog or a confirm is
+  `tk-sheet` with the page's `.form` pattern inside (label left, control right); never a hand-built `<dialog>`.
+  The switch is `<button class="switch" role="switch" aria-checked aria-labelledby>`; an icon button is
+  `.icon-btn`; a goal bar is `tk-progress`; icons come from the kit (`SETTINGS_ICON`, `TRASH_ICON`,
+  `PENCIL_ICON`, `PLUS_ICON`, `X_ICON`, …, or `ICONS[name]`), never a pasted SVG. Never re-declare a kit class or
+  pattern in app CSS.
 - Accessibility: never convey state by colour alone, and never put `aria-live` on text that changes on
   every keystroke.
 
