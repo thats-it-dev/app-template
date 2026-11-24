@@ -7,7 +7,7 @@ Read this file before you edit anything. `README.md` covers the kit, layouts, th
 | When | Run |
 | --- | --- |
 | While changing code | `npm run typecheck && npm test` |
-| While splitting files or deleting dead code | `npm run guardrails` (line limit, package name, no e2e sleeps, knip; a few seconds) |
+| While splitting files or deleting dead code | `npm run guardrails` (package name, spec, kit tokens, no e2e sleeps, knip; a few seconds) |
 | While changing one screen | `npm run e2e:one -- e2e/<file>.spec.ts` (desktop only, one spec) |
 | Before every commit | `npm run verify` (typecheck, unit tests, lint, full e2e) |
 
@@ -71,8 +71,10 @@ Generated content (words, lines, puzzles, schedules) and anything that follows t
   files with the edit tool, never a whole-file write: `oldText` is the fewest unique lines that locate
   the change (usually 1-3), and `newText` repeats as few unchanged lines as possible. Read a file once
   and read only the lines you need (`offset`/`limit`) when you look again.
-- Files under `src/` stay under 400 lines; `npm test` fails otherwise. Split by responsibility:
-  `app-main.ts` only composes components, and each panel, chart or dialog is its own file.
+- One job per file. `app-main.ts` only composes components; each panel, chart, dialog, store, parser or rule set
+  is its own module under `src/<area>/`, with its tests in `test/`. Split a file when it takes on a second job, when
+  a change to one part means reading the rest, or when a helper would serve a second file: not to hit a number.
+  A long file that does one thing is fine. Deleting blank lines or comments to shorten a file is never a fix.
 - No unused exports or files; `npm run lint` (knip) fails otherwise. Delete dead code, don't keep it.
 - Comments say what the code does and why. Never tell the story of a bug, a measurement or an earlier
   version in a comment; that goes in the commit message. Delete a comment the code no longer matches.

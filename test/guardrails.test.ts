@@ -5,7 +5,6 @@ import { join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const root = join(import.meta.dirname, "..");
-const MAX_LINES = 400;
 
 function files(dir: string, ext: RegExp): string[] {
 	return readdirSync(join(root, dir), { recursive: true, withFileTypes: true })
@@ -30,14 +29,6 @@ describe("guardrails", () => {
 		} catch {}
 		expect(spec, "write docs/spec.md (see AGENTS.md, Spec)").not.toBe("");
 		expect(spec.includes("starter spec:"), "docs/spec.md is still the starter: replace every section from Michael's request").toBe(false);
-	});
-
-	it(`source files stay under ${MAX_LINES} lines`, () => {
-		const long = files("src", /\.ts$/)
-			.map((f) => ({ f, n: read(f).split("\n").length }))
-			.filter(({ n }) => n > MAX_LINES)
-			.map(({ f, n }) => `${f}: ${n} lines, ${n - MAX_LINES} over`);
-		expect(long, "split these into modules by responsibility (see AGENTS.md)").toEqual([]);
 	});
 
 	it("CI's Playwright image matches the @playwright/test version", () => {
