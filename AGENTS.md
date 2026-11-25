@@ -11,11 +11,9 @@ Read this file before you edit anything. `README.md` covers the kit, layouts, th
 | While changing one screen | `npm run e2e:one -- e2e/<file>.spec.ts` (desktop only, one spec) |
 | Before every commit | `npm run verify` (typecheck, unit tests, lint, full e2e) |
 
-- Run the full e2e suite (`npm run e2e` or `verify`) only before a commit, not after every edit.
-- Never wait for CI yourself: no `sleep`, no `gh run list` or `gh run watch` loops. The thatsit-app skill's
-  `pr` and `ship` commands wait for CI and report the result. To update an open PR, commit and run the
-  same `pr` command again.
-- Never push with `git push` directly; `pr` and `ship` push for you.
+- The thatsit-app skill's `pr` and `ship` commands push, wait for CI and report the result; to update an open
+  PR, commit and run the same `pr` command again. (The pi guard blocks `git push`, CI polling and an e2e run
+  that is not followed by a commit; a block says what to run instead.)
 
 ## Build order
 
@@ -61,16 +59,15 @@ Generated content (words, lines, puzzles, schedules) and anything that follows t
 1. Write the test first and run it. It must fail, for the reason the bug describes; quote the failure in
    the PR.
 2. Then fix the code and run it again until it passes.
-3. Never revert source files to show a test failing (`git checkout <ref> -- <file>`, `git restore`,
-   `git reset --hard`): it deletes your uncommitted work, and the pi guard blocks it. To look at old code,
-   use `git show <ref>:<path>`.
+3. To look at old code, use `git show <ref>:<path>`, never a checkout or reset of the working tree (it deletes
+   uncommitted work; the guard blocks it).
 
 ## Code rules
 
 - Every character you write costs time (the model writes about 34 tokens a second). Change existing
-  files with the edit tool, never a whole-file write: `oldText` is the fewest unique lines that locate
-  the change (usually 1-3), and `newText` repeats as few unchanged lines as possible. Read a file once
-  and read only the lines you need (`offset`/`limit`) when you look again.
+  files with the edit tool: `oldText` is the fewest unique lines that locate the change (usually 1-3), and
+  `newText` repeats as few unchanged lines as possible. Read a file once and read only the lines you need
+  (`offset`/`limit`) when you look again.
 - One job per file. `app-main.ts` only composes components; each panel, chart, dialog, store, parser or rule set
   is its own module under `src/<area>/`, with its tests in `test/`. Split a file when it takes on a second job, when
   a change to one part means reading the rest, or when a helper would serve a second file: not to hit a number.
