@@ -40,6 +40,8 @@ async function main(): Promise<void> {
 		for (const [p, text] of await collectTypes(get, "types/lit.d.ts")) files.set(p, text);
 		// The stylesheet too: test/guardrails.test.ts checks every var(--…) in src/ against the tokens it defines.
 		files.set("kit.css", await get("kit.css"));
+		// And the API manifest: the same test checks every <tk-…> element in src/ against the ones the kit defines.
+		files.set("api.json", await get("api.json"));
 		rmSync(tmp, { recursive: true, force: true });
 		for (const [p, text] of files) {
 			mkdirSync(dirname(join(tmp, p)), { recursive: true });

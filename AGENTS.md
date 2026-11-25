@@ -90,6 +90,10 @@ Generated content (words, lines, puzzles, schedules) and anything that follows t
   `--shadow-color`, `--code-bg`, `--ring` (focus), `--underline-color`; charts `--chart-1` to `--chart-4`
   (series only). Shape and type: `--radius`, `--font-body`, `--font-display`, `--font-mono`. There is no
   `--tk-*` colour token. Light and dark values come with the token; never pick a colour per theme.
+- `npm test` enforces the styling rules (test/guardrails.test.ts, "app styles and markup stay on the kit"): no colour
+  literals, `font-family` or `border-radius` values, `--tk-*` definitions, pasted `<svg>`/`<path>`, `<dialog>`, or
+  `<tk-…>` elements the kit does not define. A line that has to break one carries `kit-ok: <why>` at its end; the
+  reviewer reads those. Pasted SVG icons are never ok: the kit has the icon or the kit gets it.
 - UI patterns: https://kit.thatsit.app/ is the design system, every token, class, component, pattern and icon
   with its code. Before building a settings dialog, a form row, a switch, an icon button, a list with actions,
   an empty state, a card or a notice, fetch that page and copy its pattern. A settings dialog or a confirm is
