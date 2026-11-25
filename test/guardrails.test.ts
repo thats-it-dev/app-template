@@ -60,6 +60,31 @@ describe("guardrails", () => {
 		expect([...new Set(unknown)], `the kit defines no such token (AGENTS.md, Styling); colours are ${colours}; shape and type are --radius, --font-body, --font-display, --font-mono`).toEqual([]);
 	});
 
+	// The template owns these files (thatsit-app's sync-template, OWNED_FILES). An app that lags the template fails
+	// here, in CI and locally, until sync-template is run on a branch; so lag is a failing test, not a note.
+	it("template-owned files match the template", async () => {
+		if (JSON.parse(read("package.json")).name === "app-template" && !process.env.TEMPLATE_DRIFT) return;
+		const owned = ["AGENTS.md", "test/guardrails.test.ts", ".github/workflows/deploy.yml", "scripts/gateway-url.ts", "scripts/kit-types.ts"];
+		const base = "https://raw.githubusercontent.com/thats-it-dev/app-template/main/";
+		const stale: string[] = [];
+		for (const f of owned) {
+			let want: string;
+			try {
+				const r = await fetch(`${base}${f}`, { signal: AbortSignal.timeout(8000) });
+				if (!r.ok) return; // offline, or GitHub is down: not this app's fault
+				want = await r.text();
+			} catch {
+				return;
+			}
+			let have = "";
+			try {
+				have = read(f);
+			} catch {}
+			if (have !== want) stale.push(f);
+		}
+		expect(stale, "behind the template: on a branch, run `node ~/.pi/agent/skills/thatsit-app/scripts/thatsit-app.ts sync-template <dir>`, commit, then make your change").toEqual([]);
+	}, 30_000);
+
 	it("e2e tests do not sleep", () => {
 		const sleeps = files("e2e", /\.ts$/).filter((f) => /\bwaitForTimeout\s*\(/.test(read(f)));
 		expect(sleeps, "wait on a condition with expect(...).toPass() or a locator assertion instead").toEqual([]);
